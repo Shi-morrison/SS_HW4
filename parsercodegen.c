@@ -878,7 +878,7 @@ token Factor(token tokenArray[], token token, symbol symbolTable[], int *tokenAr
         {
             // EMIT LOD
 
-            emit("LOD", 0, symbolTable[symIdx].addr, cx, text);
+            emit("LOD", level, symbolTable[symIdx].addr, cx, text);
         }
         return getToken(tokenArray, tokenArrayPtr);
     }
@@ -1020,7 +1020,7 @@ token Statement(token tokenArray[], token token, symbol symbolTable[], int *toke
         token = getToken(tokenArray, tokenArrayPtr);
         token = Expression(tokenArray, token, symbolTable, tokenArrayPtr, cx, text);
         // EMIT STO (M = table[symIdx].addr)
-        emit("STO", 0, symbolTable[symIdx].addr, cx, text);
+        emit("STO", level, symbolTable[symIdx].addr, cx, text);
         return token;
     }
     if (strcmp(token.token_type, "27") == 0) // CAllSYM
@@ -1123,7 +1123,7 @@ token Statement(token tokenArray[], token token, symbol symbolTable[], int *toke
         // EMIT READ
         emit("SYS", 0, 2, cx, text);
         // EMIT STO (M = table[symidx].addr)
-        emit("STO", 0, symbolTable[symIdx].addr, cx, text);
+        emit("STO", level, symbolTable[symIdx].addr, cx, text);
         return token;
     }
 
@@ -1140,7 +1140,7 @@ token Statement(token tokenArray[], token token, symbol symbolTable[], int *toke
 token Block(token tokenArray[], token token, symbol symbolTable[], int *tokenArrayPtr, int *symbolTablePtr, int *cx, operator text[])
 {
     level++;
-    int space = 4;
+    // int space = 4;
     int jmpaddr = emit("JMP", 0, 0, cx, text);
 
     if (level > 100)
@@ -1159,16 +1159,16 @@ token Block(token tokenArray[], token token, symbol symbolTable[], int *tokenArr
     }
     else if (numVars > 0)
     {
-        space = numVars + space;
+        // space = numVars + space;
         token = getToken(tokenArray, tokenArrayPtr);
     }
 
     // EMIT INC (M=3+NumVARS)
-    int nextCode = *cx - 1;
+    // int nextCode = *cx - 1;
     text[jmpaddr].M = *cx + 1;
     printf("\nJmp addr is now %d\n", *cx);
-    printf("\nSpace is %d\n", space);
-    emit("INC", 0, space, cx, text);
+    // printf("\nSpace is %d\n", space);
+    emit("INC", 0, 3 + numVars, cx, text);
     if (strcmp(token.token_type, "30") != 0 && strcmp(token.token_type, "29") != 0 && strcmp(token.token_type, "28") != 0)
     {
         token = Statement(tokenArray, token, symbolTable, tokenArrayPtr, cx, text);
